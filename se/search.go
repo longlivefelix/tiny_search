@@ -5,27 +5,30 @@
 package se
 
 import (
-	"github.com/longlivefelix/tiny_search/se/structs/block"
-	"github.com/longlivefelix/tiny_search/se/structs/group"
+	"github.com/longlivefelix/tiny_search/se/structs"
 )
 
 type Search struct {
-	Instance *group.Group
+	Groups map[string]*structs.Directory
 }
 
-var searchInstance map[string]*Search
+var searchInstance *Search = nil
 
-func NewGroup(groupName string) *Search {
-	if instance, ok := searchInstance[groupName]; ok {
+func init() {
+	searchInstance = &Search{
+		Groups: map[string]*structs.Directory{},
+	}
+}
+
+func NewDirectory(directoryName string) *structs.Directory {
+	if instance, ok := searchInstance.Groups[directoryName]; ok {
 		return instance
 	}
-	searchInstance[groupName] = &Search{
-		Instance: &group.Group{
-			GroupName:           groupName,
-			BlockList:           []block.BlockInfo{},
-			BlockListCountLimit: 64,               // 10m*64
-			BlockSizeLimit:      1024 * 1024 * 10, // 10m
-		},
+	searchInstance.Groups[directoryName] = &structs.Directory{
+		DirectoryName:       directoryName,
+		BlockList:           []*structs.BlockInfo{},
+		BlockListCountLimit: 64,               // 10m*64
+		BlockSizeLimit:      1024 * 1024 * 10, // 10m
 	}
-	return searchInstance[groupName]
+	return searchInstance.Groups[directoryName]
 }

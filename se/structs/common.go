@@ -4,3 +4,10 @@
 */
 package structs
 
+type SearchErr struct{
+	level string
+	msg string
+}
+func (err SearchErr)Error() string{
+	return err.level + ": " +err.msg
+}
